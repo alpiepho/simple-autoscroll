@@ -1,30 +1,41 @@
 var scrolling = false
 function click(e) {
     chrome.browserAction.setIcon({ path: 'green.png' }, () => {
-    var sec = document.getElementById('seconds').value
-    var scroll = document.getElementById('scroll').value
+    var sec = document.getElementById('scroll-seconds').value
+    var scroll = document.getElementById('scroll-scroll').value
+
+    //if (e.target == "button#scroll-down") {}
 
     chrome.tabs.executeScript(null, {
       code: "try{clearTimeout(t)}catch{};console.log('Stopped');",
     })
 
-    chrome.tabs.executeScript(null, {
-      code:
-"\
-console.log('Scroll " + scroll + " px every " + sec + " milliseconds');\
-function addscroll(e){\
-  var y=window.pageYOffset!==undefined?window.pageYOffset:(document.documentElement||document.body.parentNode||document.body).scrollTop;\
-  scroll(0,y+e)\
-}\
-function autoscroll(e,n){\
-  addscroll(n);\
-  t=setTimeout(function(){autoscroll(e,n)},e);\
-}\
-autoscroll(" + sec + "," + scroll + ");\
-",
-    })
+    if (scrolling) {
+      scrolling = false;
+      document.getElementById('scroll-down').innerText = 'Go';
+    } else {
+      scrolling = true;
+      document.getElementById('scroll-down').innerText = 'Pause';
 
-    window.close()
+      chrome.tabs.executeScript(null, {
+        code:
+  "\
+  console.log('Scroll " + scroll + " px every " + sec + " milliseconds');\
+  function addscroll(e){\
+    var y=window.pageYOffset!==undefined?window.pageYOffset:(document.documentElement||document.body.parentNode||document.body).scrollTop;\
+    scroll(0,y+e)\
+  }\
+  function autoscroll(e,n){\
+    addscroll(n);\
+    t=setTimeout(function(){autoscroll(e,n)},e);\
+  }\
+  autoscroll(" + sec + "," + scroll + ");\
+  ",
+      })
+    }
+
+    //leave control window open until usr clicks away
+    //window.close()
   })
 }
 
@@ -36,22 +47,22 @@ function stop() {
 }
 
 function saveDefault() {
-  const seconds = +document.getElementById('seconds').value
-  const scroll = +document.getElementById('scroll').value
-  document.getElementById('saved').innerHTML = `Saved &#10003;`
+  const seconds = +document.getElementById('scroll-seconds').value
+  const scroll = +document.getElementById('scroll-scroll').value
+  document.getElementById('scroll-saved').innerHTML = `Saved &#10003;`
 
-  localStorage.setItem('scroll', scroll)
-  localStorage.setItem('seconds', seconds)
+  localStorage.setItem('scroll-scroll', scroll)
+  localStorage.setItem('scroll-seconds', seconds)
 }
 
 document.addEventListener('DOMContentLoaded', function() {
   stop()
-  const scroll = +localStorage.getItem('scroll') || 5
-  const seconds = +localStorage.getItem('seconds') || 25
+  const scroll = +localStorage.getItem('scroll-scroll') || 5
+  const seconds = +localStorage.getItem('scroll-seconds') || 25
 
-  document.getElementById('seconds').value = seconds
-  document.getElementById('scroll').value = scroll
+  document.getElementById('scroll-seconds').value = seconds
+  document.getElementById('scroll-scroll').value = scroll
 
-  document.getElementById('go').addEventListener('click', click)
-  document.getElementById('default').addEventListener('click', saveDefault)
+  document.getElementById('scroll-down').addEventListener('click', click)
+  document.getElementById('scroll-default').addEventListener('click', saveDefault)
 })
