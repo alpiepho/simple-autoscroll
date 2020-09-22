@@ -68,6 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   document.getElementById('scroll-seconds').value = seconds
   document.getElementById('scroll-scroll').value = scroll
+  document.querySelectorAll('input[value="down"]')[0].checked = true
 
   document.getElementById('scroll-down').addEventListener('click', click)
   document.getElementById('scroll-default').addEventListener('click', saveDefault)
