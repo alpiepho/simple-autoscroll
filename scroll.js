@@ -8,7 +8,10 @@ function click(e) {
     var up = document.querySelectorAll('input[value="up"]')[0].checked
     var down = document.querySelectorAll('input[value="down"]')[0].checked
     
-
+    localStorage.setItem('scroll', scroll)
+    localStorage.setItem('seconds', sec)
+    localStorage.setItem('updown', (up ? 1 : 0))
+  
     chrome.tabs.executeScript(null, {
       code: "try{clearTimeout(t)}catch{};console.log('Stopped');",
     })
@@ -67,24 +70,18 @@ function stop() {
   })
 }
 
-function saveDefault() {
-  const seconds = +document.getElementById('scroll-seconds').value
-  const scroll = +document.getElementById('scroll-scroll').value
-  document.getElementById('scroll-saved').innerHTML = `Saved &#10003;`
-
-  localStorage.setItem('scroll-scroll', scroll)
-  localStorage.setItem('scroll-seconds', seconds)
-}
-
 document.addEventListener('DOMContentLoaded', function() {
   stop()
-  const scroll = +localStorage.getItem('scroll-scroll') || 5
-  const seconds = +localStorage.getItem('scroll-seconds') || 25
+  const scroll  = +localStorage.getItem('scroll')  || 5
+  const seconds = +localStorage.getItem('seconds') || 25
+  const up      = +localStorage.getItem('updown')  || 0
 
   document.getElementById('scroll-seconds').value = seconds
   document.getElementById('scroll-scroll').value = scroll
-  document.querySelectorAll('input[value="down"]')[0].checked = true
+  document.querySelectorAll('input[value="start"]')[0].checked = false
+  document.querySelectorAll('input[value="end"]')[0].checked = false
+  if (up) document.querySelectorAll('input[value="up"]')[0].checked = true
+  else    document.querySelectorAll('input[value="down"]')[0].checked = true
 
   document.getElementById('scroll-down').addEventListener('click', click)
-  document.getElementById('scroll-default').addEventListener('click', saveDefault)
 })
