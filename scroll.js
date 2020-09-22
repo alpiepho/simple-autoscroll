@@ -3,44 +3,59 @@ function click(e) {
     chrome.browserAction.setIcon({ path: 'green.png' }, () => {
     var sec = document.getElementById('scroll-seconds').value
     var scroll = document.getElementById('scroll-scroll').value
+    var start = document.querySelectorAll('input[value="start"]')[0].checked
+    var end = document.querySelectorAll('input[value="end"]')[0].checked
+    var up = document.querySelectorAll('input[value="up"]')[0].checked
+    var down = document.querySelectorAll('input[value="down"]')[0].checked
     
-    var choices = document.querySelectorAll('input[name="scroll-choice"]');
-    console.log(choices)
-    for (choice of choices) {
-        if (choice.checked) {
-          if (choice.value == "up") scroll = -1*scroll;
-        }
-    }
 
     chrome.tabs.executeScript(null, {
       code: "try{clearTimeout(t)}catch{};console.log('Stopped');",
     })
 
-    if (scrolling) {
+    if (start || end) {
       scrolling = false;
       document.getElementById('scroll-down').innerText = 'Go';
-    } else {
-      scrolling = true;
-      document.getElementById('scroll-down').innerText = 'Pause';
-
+      if (start) scroll = 0;
+      if (end) scroll = 1000000;
       chrome.tabs.executeScript(null, {
         code:
-  "\
-  console.log('Scroll " + scroll + " px every " + sec + " milliseconds');\
-  function addscroll(e){\
-    var y=window.pageYOffset!==undefined?window.pageYOffset:(document.documentElement||document.body.parentNode||document.body).scrollTop;\
-    scroll(0,y+e)\
-  }\
-  function autoscroll(e,n){\
-    addscroll(n);\
-    t=setTimeout(function(){autoscroll(e,n)},e);\
-  }\
-  autoscroll(" + sec + "," + scroll + ");\
-  ",
+"\
+console.log('Scroll " + scroll + " px');\
+scroll(0," + scroll + ");\
+",
       })
+
+    }
+    if (up || down) {
+      if (scrolling) {
+        scrolling = false;
+        document.getElementById('scroll-down').innerText = 'Go';
+      } else {
+        scrolling = true;
+        if (up) scroll = -1*scroll;
+        document.getElementById('scroll-down').innerText = 'Pause';
+  
+        chrome.tabs.executeScript(null, {
+          code:
+"\
+console.log('Scroll " + scroll + " px every " + sec + " milliseconds');\
+function addscroll(e){\
+  var y=window.pageYOffset!==undefined?window.pageYOffset:(document.documentElement||document.body.parentNode||document.body).scrollTop;\
+  scroll(0,y+e)\
+}\
+function autoscroll(e,n){\
+  addscroll(n);\
+  t=setTimeout(function(){autoscroll(e,n)},e);\
+}\
+autoscroll(" + sec + "," + scroll + ");\
+",
+        })
+      }
+  
     }
 
-    //leave control window open until usr clicks away
+    //leave control window open until user clicks away
     //window.close()
   })
 }
