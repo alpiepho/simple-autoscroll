@@ -3,8 +3,14 @@ function click(e) {
     chrome.browserAction.setIcon({ path: 'green.png' }, () => {
     var sec = document.getElementById('scroll-seconds').value
     var scroll = document.getElementById('scroll-scroll').value
-
-    //if (e.target == "button#scroll-down") {}
+    
+    var choices = document.querySelectorAll('input[name="scroll-choice"]');
+    console.log(choices)
+    for (choice of choices) {
+        if (choice.checked) {
+          if (choice.value == "up") scroll = -1*scroll;
+        }
+    }
 
     chrome.tabs.executeScript(null, {
       code: "try{clearTimeout(t)}catch{};console.log('Stopped');",
