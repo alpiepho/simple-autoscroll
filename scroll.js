@@ -1,13 +1,44 @@
 var scrolling = false
 function click(e) {
-    chrome.browserAction.setIcon({ path: 'green.png' }, () => {
+  if (e.type != 'click') {
+    console.log(e)
+    if (e.type == 'keyup' && (e.key == 'ArrowRight' || e.key == 'ArrowLeft')) {
+      var scroll = document.getElementById('scroll-scroll').value
+      if (e.key == 'ArrowRight') scroll = scroll*2;
+      if (e.key == 'ArrowLeft')  scroll = scroll/2;
+      if (scroll < 2) scroll = 2
+      if (scroll > 32) scroll = 2048
+      document.getElementById('scroll-scroll').value = scroll
+      // hack to keep scrolling
+      scrolling = false
+    } else if (e.type == 'keyup' && (e.key == 'ArrowUp' || e.key == 'ArrowDown')) {
+        if (e.key == 'ArrowUp') {
+          document.querySelectorAll('input[value="start"]')[0].checked = false
+          document.querySelectorAll('input[value="end"]')[0].checked = false
+          document.querySelectorAll('input[value="up"]')[0].checked = true
+          document.querySelectorAll('input[value="down"]')[0].checked = false
+        }
+        if (e.key == 'ArrowDown') {
+          document.querySelectorAll('input[value="start"]')[0].checked = false
+          document.querySelectorAll('input[value="end"]')[0].checked = false
+          document.querySelectorAll('input[value="up"]')[0].checked = false
+          document.querySelectorAll('input[value="down"]')[0].checked = true
+        }
+      // hack to keep scrolling
+      scrolling = false
+      } else if (e.type == 'keyup' && e.key != 'Space') {
+      return
+    }
+  }
+
+  chrome.browserAction.setIcon({ path: 'green.png' }, () => {
     var sec = document.getElementById('scroll-seconds').value
     var scroll = document.getElementById('scroll-scroll').value
     var start = document.querySelectorAll('input[value="start"]')[0].checked
     var end = document.querySelectorAll('input[value="end"]')[0].checked
     var up = document.querySelectorAll('input[value="up"]')[0].checked
     var down = document.querySelectorAll('input[value="down"]')[0].checked
-    
+ 
     localStorage.setItem('scroll', scroll)
     localStorage.setItem('seconds', sec)
     localStorage.setItem('updown', (up ? 1 : 0))
@@ -84,4 +115,5 @@ document.addEventListener('DOMContentLoaded', function() {
   else    document.querySelectorAll('input[value="down"]')[0].checked = true
 
   document.getElementById('scroll-down').addEventListener('click', click)
+  document.getElementById('scroll-down').addEventListener('keyup', click)
 })
