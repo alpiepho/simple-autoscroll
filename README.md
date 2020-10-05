@@ -29,3 +29,8 @@ An extension that adds the ability to automatically scroll through long pages.
 - Add theme colors?
 - Pull Request to original Author
 - 
+
+## NOTES
+- doesn't not work on some sites
+  - twitch.tv
+  - found this works document.getElementsByClassName("root-scrollable")[0].getElementsByClassName("simplebar-scroll-content")[0].scroll(0,1200)
