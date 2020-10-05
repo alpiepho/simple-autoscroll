@@ -9,6 +9,7 @@ NOTE: The branches below build on the previous branch.  For example code the bra
 - gopause - keep window up, larger button, button supports go/pause (with focus you can use space bar)
 - gopause_updown - add radio buttons for scroll direction, start/end
 - gopause_updown_autosave - auto save settings on click instead of save button
+- gopause_updown_autosave_arrows - added use of arrows to control scroll direction and speed
 
 # How Tested
 
